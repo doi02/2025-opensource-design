@@ -1,0 +1,27 @@
+<header th:fragment="siteHeader"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="header-left">
+        <h1><a th:href="@{/}" class="logo">How About Games</a></h1>
+    </div>
+    <div class="header-right">
+        <div class="search-container">
+            <input type="text" placeholder="게임 검색…">
+            <button>검색</button>
+        </div>
+        <div class="user-profile">:D</div>
+        <div class="user-menu">
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/profile}">내정보</a> |
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit">로그아웃</button>
+                </form>
+            </div>
+            <!-- 비로그인(익명) 사용자만 표시 -->
+            <div sec:authorize="isAnonymous()">
+                <a th:href="@{/user/signup}">회원가입</a> |
+                <a th:href="@{/login}">로그인</a>
+            </div>
+        </div>
+    </div>
+</header>

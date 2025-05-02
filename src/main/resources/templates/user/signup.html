@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>회원가입 | GameReview</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}"/>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container">
+    <form class="signup-form"
+          th:action="@{/user/signup}"
+          th:object="${user}"
+          method="post">
+        <h2>회원가입</h2>
+
+        <!-- 아이디 -->
+        <div class="form-group">
+            <label for="username">아이디</label>
+            <div class="input-inline">
+                <input type="text" id="username" th:field="*{username}" placeholder="4~20자 영문 또는 숫자"/>
+                <button type="button" class="btn-sm" onclick="checkUsername()">중복확인</button>
+            </div>
+            <div class="ajax-msg" id="usernameMsg"></div>
+            <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <div class="input-inline">
+                <input type="email" id="email" th:field="*{email}" placeholder="example@domain.com"/>
+                <button type="button" class="btn-sm" onclick="checkEmail()">중복확인</button>
+            </div>
+            <div class="ajax-msg" id="emailMsg"></div>
+            <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="8~24자, 영문+숫자"/>
+            <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="form-group">
+            <label for="confirmPassword">비밀번호 확인</label>
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" placeholder="비밀번호 재입력"/>
+            <div class="error" th:if="${#fields.hasErrors('passwordMatching')}" th:errors="*{passwordMatching}"></div>
+        </div>
+
+        <!-- 서비스 예외 메시지 -->
+        <div class="error" th:if="${error}" th:text="${error}"></div>
+
+        <!-- 제출 버튼 -->
+        <div class="form-group">
+            <button type="submit" class="btn-primary">회원가입</button>
+        </div>
+    </form>
+</main>
+
+<script th:src="@{/js/common.js}"></script>
+<script defer>
+    // DOM 로딩이 끝난 뒤 스크립트 실행
+    window.addEventListener('DOMContentLoaded', () => {
+        // 아이디 중복 확인
+        const usernameInput = document.getElementById('username');
+        const usernameMsg   = document.getElementById('usernameMsg');
+        const usernameBtn   = document.querySelector('.input-inline button[onclick="checkUsername()"]');
+
+        usernameBtn.addEventListener('click', async () => {
+            const name = usernameInput.value.trim();
+            if (!name) {
+                usernameMsg.textContent = '아이디를 입력해 주세요.';
+                return;
+            }
+            try {
+                const res = await fetch(`/user/check-username?username=${encodeURIComponent(name)}`);
+                const ok  = await res.json();
+                usernameMsg.textContent = ok
+                    ? '사용 가능한 아이디입니다.'
+                    : '이미 사용 중인 아이디입니다.';
+            } catch (e) {
+                usernameMsg.textContent = '⚠️ 서버 오류가 발생했습니다.';
+            }
+        });
+
+        // 이메일 중복 확인
+        const emailInput = document.getElementById('email');
+        const emailMsg   = document.getElementById('emailMsg');
+        const emailBtn   = document.querySelector('.input-inline button[onclick="checkEmail()"]');
+
+        emailBtn.addEventListener('click', async () => {
+            const mail = emailInput.value.trim();
+            if (!mail) {
+                emailMsg.textContent = '이메일을 입력해 주세요.';
+                return;
+            }
+            try {
+                const res = await fetch(`/user/check-email?email=${encodeURIComponent(mail)}`);
+                const ok  = await res.json();
+                emailMsg.textContent = ok
+                    ? '사용 가능한 이메일입니다.'
+                    : '이미 사용 중인 이메일입니다.';
+            } catch (e) {
+                emailMsg.textContent = '⚠️ 서버 오류가 발생했습니다.';
+            }
+        });
+    });
+</script>
+<!--<script defer>-->
+<!--    function checkUsername() {-->
+<!--        const name = document.getElementById('username').value;-->
+<!--        fetch(`/user/check-username?username=${encodeURIComponent(name)}`)-->
+<!--            .then(res => res.json())-->
+<!--            .then(ok => {-->
+<!--                document.getElementById('usernameMsg').textContent =-->
+<!--                    ok ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.';-->
+<!--            });-->
+<!--    }-->
+<!--    function checkEmail() {-->
+<!--        const mail = document.getElementById('email').value;-->
+<!--        fetch(`/user/check-email?email=${encodeURIComponent(mail)}`)-->
+<!--            .then(res => res.json())-->
+<!--            .then(ok => {-->
+<!--                document.getElementById('emailMsg').textContent =-->
+<!--                    ok ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.';-->
+<!--            });-->
+<!--    }-->
+<!--</script>-->
+</body>
+</html>

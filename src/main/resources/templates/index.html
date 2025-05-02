@@ -1,138 +1,15 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameReview</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-        }
-        .search-container {
-            display: flex;
-            align-items: center;
-            margin-right: 1rem; /* 프로필 아이콘과 검색창 간격 */
-        }
-        .search-container input {
-            padding: 0.5rem;
-            border: none;
-            border-radius: 4px 0 0 4px;
-            border-right: none;
-        }
-        .search-container button {
-            padding: 0.5rem 1rem;
-            background-color: #555;
-            color: white;
-            border: none;
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-        }
-        .search-container button:hover {
-            background-color: #777;
-        }
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            background-color: #ddd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .user-menu {
-            position: absolute;
-            top : 8px;
-            right: 10px;
-            display: flex;
-            gap: 1rem;
-            font-size: 0.8rem;
-        }
-        .user-menu a {
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .user-menu a:hover {
-            text-decoration: underline;
-        }
-        main {
-            padding: 2rem;
-        }
-        .game-category {
-            margin-bottom: 2rem;
-        }
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            grid-template-rows: 300px;
-            gap: 1rem;
-        }
-        .game-card {
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .game-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-        .game-card h3 {
-            padding: 0.5rem;
-            margin: 0;
-            font-size: 1rem;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/common.css}">
 </head>
 <body>
-<header>
-    <div class="header-left">
-        <h1>GameReview</h1>
-    </div>
-    <div class="header-right">
-        <div class="search-container">
-            <input type="text" placeholder="게임 검색...">
-            <button>검색</button>
-        </div>
-        <div class="user-profile">
-            :D
-        </div>
-        <div class="user-menu">
-            <!-- Thymeleaf 조건에 따라 표시 -->
-            <span th:if="${isLoggedIn}">
-                <a href="/profile">내정보</a> |
-                <a href="/logout">로그아웃</a>
-            </span>
-            <span th:if="${!isLoggedIn}">
-                <a href="/signup">회원가입</a> |
-                <a href="/login">로그인</a>
-            </span>
-        </div>
-    </div>
-</header>
-
+<div th:replace="~{fragments/header :: siteHeader}"></div>
 <main>
     <section class="game-category">
         <h2>Hot</h2>

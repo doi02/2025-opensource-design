@@ -2,7 +2,9 @@ package doi.game_review_community.domain.user.service;
 
 import doi.game_review_community.domain.user.User;
 import doi.game_review_community.domain.user.repository.UserRepository;
+import doi.game_review_community.dto.UserRegistrationDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> findAllUsers() {
@@ -33,24 +36,59 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long join(User user) {
         // 중복 회원 검증
-        validateDuplicateUsername(user);
-        validateDuplicateUserEmail(user);
+        validateDuplicateUsername(user.getUsername());
+        validateDuplicateUserEmail(user.getEmail());
         userRepository.save(user);
         return user.getId();
     }
 
-    private void validateDuplicateUsername(User user) {
-        userRepository.findByUsername(user.getUsername())
-                .ifPresent(existingUser -> {
-                    throw new IllegalArgumentException("이미 사용중인 id 입니다: " + user.getUsername());
-                });
+    @Override
+    public Long join(UserRegistrationDto dto) {
+        // 내부의 비밀번호 확인, 중복검사
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        // 아이디/이메일 중복검사
+        validateDuplicateUsername(dto.getUsername());
+        validateDuplicateUserEmail(dto.getEmail());
+
+        //엔티티 생성
+        User user = new User(
+                dto.getUsername(),
+                passwordEncoder.encode(dto.getPassword()),
+                dto.getEmail());
+        userRepository.save(user);
+        return user.getId();
     }
 
-    private void validateDuplicateUserEmail(User user) {
-        userRepository.findByEmail(user.getEmail())
-                .ifPresent(existingUser -> {
-                    throw new IllegalArgumentException("이미 사용중인 email 입니다: " + user.getEmail());
-                });
+    private boolean existsUsername(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+    private boolean existsEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    private void validateDuplicateUsername(String username) {
+        if (existsUsername(username)) {
+            throw new IllegalArgumentException("이미 사용중인 id 입니다: " + username);
+        }
+    }
+
+    private void validateDuplicateUserEmail(String email) {
+        if (existsEmail(email)) {
+            throw new IllegalArgumentException("이미 사용중인 email 입니다: " + email);
+        }
+    }
+    
+    //ajax 전용
+    @Override
+    public boolean isUsernameAvailable(String username) {
+        return !existsUsername(username);
+    }
+    //ajax 전용
+    @Override
+    public boolean isEmailAvailable(String email) {
+        return !existsEmail(email);
     }
 
     @Override
