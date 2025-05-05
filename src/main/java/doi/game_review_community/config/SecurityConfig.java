@@ -3,6 +3,7 @@ package doi.game_review_community.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,28 +49,33 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        // 1) 정적 리소스
+                        // 정적 리소스
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
-                        // 2) 퍼블릭(비로그인) 기능
+                        // 퍼블릭(비로그인) 기능
                         .requestMatchers(
                                 "/", "/index",                   // 홈
-                                "/user/signup", "/check-username", "/check-email",  // 회원가입·중복검사
+                                "/user/signup", "/user/check-username", "/user/check-email",  // 회원가입·중복검사
                                 "/login"                         // 로그인 폼
-                                // 필요하다면 아래와 같이 추가!
-                                // , "/games/**", "/reviews/**", "/search/**"
                         ).permitAll()
-
-                        // 3) 그 외는 로그인 필요
+                        // 게임 조회 및 검색 허용
+                        .requestMatchers(HttpMethod.GET, "/games/*").permitAll()
+                        // 리뷰 등록, 수정, 삭제, 좋아요/싫어요 로그인필요
+                        .requestMatchers(HttpMethod.POST, "/games/*/reviews/*").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/games/*/reviews/*").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/games/*/reviews/*").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/games/*/reviews/*/like").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/games/*/reviews/*/dislike").authenticated()
+                        // 그외는 로그인필요
                         .anyRequest().authenticated()
                 )
 
                 // 로그인 페이지 및 처리
                 .formLogin(form -> form
-                        .loginPage("/login")               // 로그인 폼 URL
-                        .loginProcessingUrl("/login")      // POST 처리 URL (기본 /login)
-                        .defaultSuccessUrl("/", true)      // 성공 후 홈으로
-                        .failureUrl("/login?error")        // 실패 시 에러 파라미터
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error")
                         .permitAll()
                 )
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>게임 목록</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+
+<main>
+    <h2 th:if="${keyword}">“<span th:text="${keyword}"></span>” 검색 결과</h2>
+    <h2 th:if="${keyword == null}">전체 게임 목록</h2>
+    <div class="game-grid">
+        <div class="game-card" th:each="g : ${games}">
+            <!-- 카드 전체를 링크로 감싸기 -->
+            <a th:href="@{/games/{id}(id=${g.id})}" class="card-link">
+                <img th:src="${g.imageUrl}" alt="게임 표지" />
+                <h3 th:text="${g.name}">게임 이름</h3>
+                <p th:text="${#temporals.format(g.releaseDate, 'yyyy-MM-dd')}">출시일</p>
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

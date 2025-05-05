@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import jakarta.validation.constraints.*;
 
+//회원가입 검증용 DTO
 @Getter @Setter
 public class UserRegistrationDto {
 

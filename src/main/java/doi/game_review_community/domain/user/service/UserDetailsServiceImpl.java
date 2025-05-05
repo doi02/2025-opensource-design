@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
-@Service  // 이 어노테이션 덕분에 컨텍스트에 빈으로 등록됩니다.
+//
+@Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -22,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
 
-        // User 의 role 필드를 기반으로 권한 생성 (예: ROLE_USER)
+        // User 의 role 필드를 기반으로 권한 생성 추후 권한별 행동제약에 사용될 예정
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
-    //임시
+    //임시 저장소
     private static final Map<Long, User> store = new ConcurrentHashMap<Long, User>();
     private static AtomicLong sequence = new AtomicLong(0);
 

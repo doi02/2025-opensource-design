@@ -1,3 +1,9 @@
+:root{
+    --color-primary: #444;
+    --color-primary-hover: #555;
+    --color-primary-dark : #333;
+    --color-text: #000;
+}
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -31,4 +37,10 @@ main {
     padding: 0.5rem;
     margin: 0;
     font-size: 1rem;
+}
+.card-link {
+    display: block; color: inherit; text-decoration: none;
+}
+.card-link:hover {
+    text-decoration: none;
 }

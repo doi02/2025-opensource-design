@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${game.name} + ' | GameReview'">Game Detail</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/detail.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+<main class="container detail-page">
+    <!-- 게임 기본 정보 -->
+    <section class="game-detail">
+        <div class="cover">
+            <img th:src="${game.imageUrl}" alt="게임 표지" />
+        </div>
+        <div class="info">
+            <h1 th:text="${game.name}">Game Title</h1>
+            <p><strong>출시일:</strong> <span th:text="${game.releaseDate}">YYYY-MM-DD</span></p>
+            <p><strong>개발사:</strong> <span th:text="${game.developer}">Developer</span></p>
+            <p><strong>유통사:</strong> <span th:text="${game.publisher}">Publisher</span></p>
+            <p><strong>플랫폼:</strong>
+                <span th:each="plat,iterStat : ${game.platforms}"
+                      th:text="${plat} + ${iterStat.last ? '' : ', '}">PC</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- 리뷰 목록 -->
+    <section class="reviews">
+        <h2>리뷰 목록</h2>
+        <div th:if="${#lists.isEmpty(reviews)}">
+            <p>아직 등록된 리뷰가 없습니다.</p>
+        </div>
+        <div th:each="rev : ${reviews}" class="review">
+            <div class="meta">
+                <span class="author" th:text="${rev.author.username}">username</span>
+                <span class="total-score">총점: <strong th:text="${rev.totalScore}">0</strong>/100</span>
+            </div>
+            <p class="content" th:text="${rev.content}">리뷰 내용</p>
+            <div class="actions">
+                <form th:action="@{/games/{gameId}/reviews/{revId}/like(
+                                        gameId=${game.id},revId=${rev.id})}"
+                      method="post" th:object="${rev}">
+                    <button type="submit">👍</button>
+                    <span th:text="${rev.likeCount}">0</span>
+                </form>
+                <form th:action="@{/games/{gameId}/reviews/{revId}/dislike(
+                                        gameId=${game.id},revId=${rev.id})}"
+                      method="post" th:object="${rev}">
+                    <button type="submit">👎</button>
+                    <span th:text="${rev.dislikeCount}">0</span>
+                </form>
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${#authentication.name == rev.author.username}">
+                        <a th:href="@{/games/{gameId}/reviews/{revId}/edit(
+                     gameId=${game.id}, revId=${rev.id})}"
+                           class="btn-link">수정</a>
+                        <span>&nbsp;|&nbsp;</span>
+                        <form th:action="@{/games/{gameId}/reviews/{revId}(
+                         gameId=${game.id}, revId=${rev.id})}"
+                              method="post" style=" display:inline"
+                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                            <input type="hidden" name="_method" value="delete"/>
+                            <button type="submit">삭제</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 리뷰 작성 폼 (로그인 시에만) -->
+    <div sec:authorize="isAuthenticated()">
+        <section class="review-form">
+            <h2>리뷰 작성</h2>
+            <form th:action="@{/games/{gameId}/reviews(gameId=${game.id})}"
+                  th:object="${newReview}"
+                  method="post">
+                <div class="form-group">
+                    <label for="content">리뷰 내용 (최대 200자)</label>
+                    <textarea id="content" th:field="*{content}"
+                              maxlength="200" rows="4" required></textarea>
+                    <div class="error" th:if="${#fields.hasErrors('content')}"
+                         th:errors="*{content}"></div>
+                </div>
+
+                <div class="slider-group">
+                    <label for="graphicScore">
+                        Graphics: <span id="graphicValue">2.5</span>
+                    </label>
+                    <input type="range" id="graphicScore"
+                           th:field="*{graphicScore}"
+                           min="0" max="5" step="0.5" value="2.5"
+                           oninput="document.getElementById('graphicValue').textContent = this.value"/>
+                </div>
+                <div class="slider-group">
+                    <label for="storyScore">
+                        Story: <span id="storyValue">2.5</span>
+                    </label>
+                    <input type="range" id="storyScore"
+                           th:field="*{storyScore}"
+                           min="0" max="5" step="0.5" value="2.5"
+                           oninput="document.getElementById('storyValue').textContent = this.value"/>
+                </div>
+                <div class="slider-group">
+                    <label for="gameplayScore">
+                        Gameplay: <span id="gameplayValue">2.5</span>
+                    </label>
+                    <input type="range" id="gameplayScore"
+                           th:field="*{gameplayScore}"
+                           min="0" max="5" step="0.5" value="2.5"
+                           oninput="document.getElementById('gameplayValue').textContent = this.value"/>
+                </div>
+                <div class="slider-group">
+                    <label for="soundScore">
+                        Sound: <span id="soundValue">2.5</span>
+                    </label>
+                    <input type="range" id="soundScore"
+                           th:field="*{soundScore}"
+                           min="0" max="5" step="0.5" value="2.5"
+                           oninput="document.getElementById('soundValue').textContent = this.value"/>
+                </div>
+                <button type="submit" class="btn-primary">등록</button>
+                <span class="error"
+                      th:if="${errorMessage}"
+                      th:text="${errorMessage}"
+                      style="color: #e74c3c; margin-left: 1rem;"></span>
+            </form>
+        </section>
+    </div>
+</main>
+
+<script>
+    // 초기 슬라이더 값
+    document.addEventListener('DOMContentLoaded', () => {
+        ['graphic','story','gameplay','sound'].forEach(key => {
+            const inp = document.getElementById(key + 'Score');
+            const out = document.getElementById(key + 'Value');
+            if (inp && out) out.textContent = inp.value;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>내 정보 | GameReview</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/profile.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+
+<main class="container">
+    <section class="profile-view">
+        <h2>내 정보</h2>
+
+        <div class="info-group">
+            <span class="label">ID</span>
+            <span class="value" th:text="${user.id}"></span>
+        </div>
+        <div class="info-group">
+            <span class="label">아이디</span>
+            <span class="value" th:text="${user.username}"></span>
+        </div>
+        <div class="info-group">
+            <span class="label">이메일</span>
+            <span class="value" th:text="${user.email}"></span>
+        </div>
+        <div class="info-group">
+            <span class="label">레벨</span>
+            <span class="value" th:text="${user.level}"></span>
+        </div>
+
+        <div class="info-group">
+            <span class="label">경험치</span>
+            <span class="value" th:text="${user.exp} + '/100'"></span>
+        </div>
+        <div class="exp-bar">
+            <div class="exp-fill"
+                 th:style="'width:' + ${user.exp} + '%'"></div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

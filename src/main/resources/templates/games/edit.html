@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>리뷰 수정 | GameReview</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}"/>
+    <link rel="stylesheet" th:href="@{/css/detail.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+
+<main class="container">
+    <section class="review-form">
+        <h2>리뷰 수정</h2>
+        <form th:action="@{/games/{gameId}/reviews/{reviewId}(gameId=${game.id},reviewId=${reviewId})}"
+              th:object="${reviewDto}"
+              method="post">
+            <input type="hidden" name="_method" value="put"/>
+
+            <div class="form-group">
+                <label for="content">리뷰 내용 (최대 200자)</label>
+                <textarea id="content" th:field="*{content}"
+                          maxlength="200" rows="4" required></textarea>
+                <div class="error"
+                     th:if="${#fields.hasErrors('content')}"
+                     th:errors="*{content}"></div>
+            </div>
+            <div class="slider-group">
+                <label for="graphicScore">
+                    Graphics: <span id="graphicValue">2.5</span>
+                </label>
+                <input type="range" id="graphicScore"
+                       th:field="*{graphicScore}"
+                       min="0" max="5" step="0.5"
+                       oninput="document.getElementById('graphicValue').textContent = this.value"/>
+            </div>
+            <div class="slider-group">
+                <label for="storyScore">
+                    Story: <span id="storyValue">2.5</span>
+                </label>
+                <input type="range" id="storyScore"
+                       th:field="*{storyScore}"
+                       min="0" max="5" step="0.5"
+                       oninput="document.getElementById('storyValue').textContent = this.value"/>
+            </div>
+            <div class="slider-group">
+                <label for="gameplayScore">
+                    Gameplay: <span id="gameplayValue">2.5</span>
+                </label>
+                <input type="range" id="gameplayScore"
+                       th:field="*{gameplayScore}"
+                       min="0" max="5" step="0.5"
+                       oninput="document.getElementById('gameplayValue').textContent = this.value"/>
+            </div>
+            <div class="slider-group">
+                <label for="soundScore">
+                    Sound: <span id="soundValue">2.5</span>
+                </label>
+                <input type="range" id="soundScore"
+                       th:field="*{soundScore}"
+                       min="0" max="5" step="0.5"
+                       oninput="document.getElementById('soundValue').textContent = this.value"/>
+            </div>
+
+            <button type="submit" class="btn-primary">수정</button>
+        </form>
+    </section>
+</main>
+
+<!-- 초기 슬라이더 초기화 -->
+<script>
+    document.getElementById('graphicValue').textContent    = document.getElementById('graphicScore').value;
+    document.getElementById('storyValue').textContent      = document.getElementById('storyScore').value;
+    document.getElementById('gameplayValue').textContent   = document.getElementById('gameplayScore').value;
+    document.getElementById('soundValue').textContent      = document.getElementById('soundScore').value;
+</script>
+</body>
+</html>

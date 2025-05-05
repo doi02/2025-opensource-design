@@ -1,5 +1,6 @@
 package doi.game_review_community.controller;
 
+import doi.game_review_community.domain.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import doi.game_review_community.domain.user.service.UserService;
@@ -10,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -19,7 +22,7 @@ public class UserController {
 
     //가입폼
     @GetMapping("/signup")
-    public String signup(Model model) {
+    public String signupForm(Model model) {
         model.addAttribute("user", new UserRegistrationDto());
         return "user/signup";
     }
@@ -59,4 +62,11 @@ public class UserController {
         return userService.isEmailAvailable(email);
     }
 
+    @GetMapping("/myprofile")
+    public String viewMyProfile(Model model, Principal principal) {
+        //유저명은  Principal로 조회
+        User user = userService.findUserByUsername(principal.getName());
+        model.addAttribute("user", user);
+        return "user/myprofile";
+    }
 }
