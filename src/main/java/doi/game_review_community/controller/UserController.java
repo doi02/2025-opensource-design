@@ -69,4 +69,6 @@ public class UserController {
         model.addAttribute("user", user);
         return "user/myprofile";
     }
+
+    //@GetMapping searchUser(keyword, principal)
 }

@@ -45,6 +45,7 @@ public class User {
         while (exp >= 100) {
             levelUp();
         }
+
     }
 
     private void levelUp() {

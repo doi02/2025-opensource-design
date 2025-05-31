@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "games")
 @Getter @Setter @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Game {
 
     @Id
