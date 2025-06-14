@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameReview</title>
+    <link rel="stylesheet" th:href="@{css/header.css}">
+    <link rel="stylesheet" th:href="@{css/common.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: siteHeader}"></div>
+<main>
+    <!-- Hot 섹션 -->
+    <section class="game-category">
+        <h2>Hot</h2>
+        <div class="game-grid">
+            <div class="game-card" th:each="game : ${hotGames}">
+                <a th:href="@{'/games/' + ${game.id}}">
+                    <img th:src="${game.imageUrl}" th:alt="${game.name}" width="200" height="150"/>
+                    <h3 th:text="${game.name}"></h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ranking 섹션 -->
+    <section class="game-category">
+        <h2>Ranking</h2>
+        <div class="game-grid">
+            <div class="game-card" th:each="game : ${rankingGames}">
+                <a th:href="@{'/games/' + ${game.id}}">
+                    <img th:src="${game.imageUrl}" th:alt="${game.name}" width="200" height="150"/>
+                    <h3 th:text="${game.name}"></h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular 섹션 -->
+    <section class="game-category">
+        <h2>Popular</h2>
+        <div class="game-grid">
+            <div class="game-card" th:each="game : ${popularGames}">
+                <a th:href="@{'/games/' + ${game.id}}">
+                    <img th:src="${game.imageUrl}" th:alt="${game.name}" width="200" height="150"/>
+                    <h3 th:text="${game.name}"></h3>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

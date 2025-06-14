@@ -29,25 +29,19 @@ public class RawgGameServiceImpl implements RawgGameService {
 
     @Override
     public List<Game> importAndSearch(String keyword) {
-        // RAWG 검색 API 호출: 점수 높은 순으로 정렬하고, 결과를 2개로 제한
         String url = String.format(
                 "/games?key=%s&search=%s&ordering=-metacritic&page_size=2",
-                apiKey,
-                keyword
+                apiKey, keyword
         );
-
-        RawgGamesResponseDto response = rawgRestTemplate.getForObject(
-                url,
-                RawgGamesResponseDto.class
-        );
-
+        RawgGamesResponseDto response = rawgRestTemplate.getForObject(url, RawgGamesResponseDto.class);
         if (response == null || response.getResults() == null) {
             return List.of();
         }
 
-        // RawgGameDto를 Game 엔티티로 변환, DB에 저장, 리스트로 반환
         return response.getResults().stream()
                 .map(this::toGameEntity)
+                // DB에 같은 이름의 게임이 없을 때만 save()
+                .filter(game -> !gameRepository.existsByName(game.getName()))
                 .map(gameRepository::save)
                 .collect(Collectors.toList());
     }

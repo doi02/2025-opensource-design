@@ -9,5 +9,6 @@ public enum Platform {
     NINTENDO_SWITCH,
     NINTENDO_SWITCH_2,
     NINTENDO_3DS,
+    NINTENDO_WII_U,
     MOBILE
 }
